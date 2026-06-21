@@ -2637,20 +2637,106 @@ function RetentionCalculatorInner() {
         <div className={"rpm-glide" + (formulaOpen ? " open" : "")}>
           <div style={{ overflow: "hidden" }}>
             <div style={{ paddingBottom: 12 }}>
-              Her price to keep (<strong>S</strong>) is her maintenance floor (<strong>B</strong>),
-              set by local cost of living and how she presents: her desirability, her fitness, and
-              the upkeep her body and beauty routine actually cost, multiplied by the intensity of
-              who she compares you to (<strong>C</strong>), driven by the money in her circle, her own
-              income and education, and how educated her market is, multiplied by how freely she can
-              reach alternatives (<strong>M</strong>), her age, her mobility, and whether children
-              anchor her in place. Against that price you put your delivered value: what you provide
-              as a partner plus your relational value, discounted by how much her past and your
-              standing weigh on a serious match (<strong>k</strong>), minus the friction she has to
-              absorb (<strong>F</strong>), chiefly your children, the distance, and support. You keep
-              her only if delivered value clears S, and only if she is genuinely all in rather than
-              sourcing attention or money from higher-tier men elsewhere, a gate that fails before
-              price is even counted. Enter the ZIP where you hope to meet her to run it on real local
-              data.
+              <strong>How the Algorithm Thinks</strong>
+              <br /><br />
+              There is a question people will not ask out loud, because saying it feels like a
+              betrayal of something sacred: what would it actually take to win and keep a particular
+              woman, in her particular world, as that world works right now? The model asks it, and
+              asks it in numbers, because the gentlest-sounding answers are usually the ones that
+              leave a person most alone with a problem they cannot see. Clarity is not the opposite
+              of tenderness here. Clarity is the tenderness.
+              <br /><br />
+              Start with what the research already settled, because the model did not invent the
+              marketplace, it walked in after sociologists had named it. Scholars studying dating
+              apps call the thing "marketised love," and they describe users doing exactly what the
+              model formalizes: identifying what they need, establishing what they offer, evaluating
+              the field, and picking the best available fit by cost and benefit. The people swiping
+              know this. One close study found users fully aware they are being commodified and
+              commodifying in return. So the discomfort a person feels at seeing love rendered as
+              arithmetic is not the model introducing the math. The math was already running. The
+              model only declined to hide it.
+              <br /><br />
+              The marketplace also has measured winners and losers, and the spread is staggering. On
+              Tinder, the average man is liked by fewer than one in a hundred fifteen women, a
+              concentration of desirability that researchers note dwarfs ordinary economic
+              inequality. A small number of people command most of the attention and choose from it
+              freely, while most bid into the void. That is not bitterness talking. That is the
+              supply and demand of the thing, counted.
+              <br /><br />
+              And here the evidence sharpens into something the culture prefers not to say plainly.
+              The sorting is not symmetric. In a controlled experiment on Tinder, women strongly
+              preferred more educated partners while men showed no such preference, and the usual
+              matching by education collapsed once the app removed the friction that used to slow
+              people down. Status selectivity, exercised primarily by women choosing up, is the
+              active variable in the modern market. This is not an accusation. It is a rational
+              response to expanded options, and anyone handed that leverage would use it. But a model
+              that pretended the pressure ran equally in both directions would be lying to be polite,
+              and politeness that distorts the map is not kindness.
+              <br /><br />
+              So watch the model think, with a real woman in a real place. Take a striking, fit,
+              well-educated woman, no children, late twenties, in a moneyed professional circle in
+              downtown Charleston, SC. It begins with what her life costs to maintain, about
+              eighty-five thousand dollars a year, which is not a verdict on her character but the
+              plain price of the life she already lives, scaled to her city. That number alone is not
+              yet what she costs a man. It is only where the counting starts.
+              <br /><br />
+              Comparison is what turns that number into a price, and the model makes the move
+              checkable instead of merely felt. It asks how wealthy the men around her are and
+              converts it into a multiplier near 1.4, drawn from her reference group, because no one
+              evaluates a partner in a vacuum. People measure against the field in front of them, and
+              her field is moneyed, so the standard rises. Eighty-five thousand becomes roughly one
+              hundred twenty-three thousand once her comparison set is taken seriously.
+              <br /><br />
+              Then the model asks the question that governs everything: can she leave. A standard
+              means nothing held by someone with nowhere to go and is effortless for someone with the
+              whole field open. Young, mobile, unanchored, her reach to alternatives multiplies the
+              number again, by about 2.2, and the first movement of the arithmetic closes near two
+              hundred seventy thousand dollars a year as the real cost to keep her. Three forces, each
+              defensible standing alone, none sufficient by itself, true only as a product.
+              <br /><br />
+              That is her side of the page, and a model that stopped there would earn every charge of
+              cruelty, because anyone can price another person. The integrity is in what comes next,
+              that the same arithmetic turns on the man. It takes what he earns, taxes it the way the
+              world taxes it, subtracts what his own life costs to run, and only then asks what is
+              left for her. A man earning three hundred thousand dollars does not walk in with three
+              hundred thousand to give. After the government and his own living, the honest remainder
+              is far smaller, and the model makes him hold that figure instead of the flattering one
+              on his pay stub. He is not above the equation. He is inside it, measured by the same
+              ruler he was holding to her.
+              <br /><br />
+              Two design choices are where the model keeps its conscience. The first is that a man's
+              love counts. His steadiness, his presence, the felt experience of being cared for well,
+              is permitted to offset her price, but the offset is capped on purpose, because the most
+              comforting lie ever told to a striving man is that being good enough will close any
+              gap. Devotion is real and devotion has a limit, and a model that let love erase
+              economics would feel warmer while quietly deceiving. The cap is where it refuses to
+              flatter.
+              <br /><br />
+              The second is a gate above all the math. If she is still drawing attention or resources
+              from higher-status men while he competes, the calculation never runs, because the
+              position was never open. This is the model guarding a man against the most silent waste
+              there is, spending his years clearing a price for a door that closed before he arrived.
+              Some contests are decided before entry, and a person deserves to know which.
+              <br /><br />
+              What makes this more than provocation is its floor in public evidence: the Census for
+              income and cost, the CDC for health and body data, and the body of research that has
+              already documented every dynamic the model prices. Assortative sorting is not just
+              shaped by the broader economy, it manufactures more of its inequality. The economists
+              found that if mating were random instead of sorted by status, household inequality
+              would fall measurably, the Gini coefficient dropping from 0.43 to 0.34. The dating
+              market is not a soft mirror of the class economy. It is one of its engines. The model
+              reports that engine and absorbs the discomfort, because describing a hard system is not
+              endorsing it, and the people quickest to confuse the two are usually the ones the
+              system never made suffer.
+              <br /><br />
+              What the algorithm finally teaches is not the two hundred seventy thousand dollars. It
+              is the practice of standing inside a hard truth without being destroyed by it. It holds
+              that a person can see the real terms of their life, in numbers, and still choose with
+              courage from inside them, whether the brave choice is to build toward the figure, to
+              want something they can actually reach, or to love where they are genuinely met. The
+              number was never the threat. The refusal to look was the threat, and it had been
+              quietly collecting for years. The model only makes looking possible, and trusts the
+              person on the other side to be strong enough for what they find.
             </div>
           </div>
         </div>
