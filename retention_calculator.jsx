@@ -124,7 +124,7 @@ const S_ = {
   explainP: { margin: 0, fontSize: 13, color: "var(--warm1)", lineHeight: 1.5 },
   grid: { display: "grid", gridTemplateColumns: "minmax(320px, 1fr) minmax(340px, 1.05fr)", gap: 28, maxWidth: 1200, margin: "28px auto 0", padding: "0 32px", alignItems: "start" },
   col: { display: "flex", flexDirection: "column", gap: 14 },
-  accordion: { border: `1px solid ${LINE}`, background: "var(--paper2)" },
+  accordion: { borderTop: `1px solid ${LINE}`, borderRight: `1px solid ${LINE}`, borderLeft: `1px solid ${LINE}`, background: "var(--paper2)" },
   accBtn: { width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 18px", background: "none", border: "none", cursor: "pointer", textAlign: "left" },
   accBtnOpen: { borderBottom: `1px solid ${LINE}`, background: "var(--surface)" },
   accLabel: { display: "block", fontSize: 16, fontWeight: 600 },
@@ -1939,7 +1939,7 @@ function RetentionCalculatorInner() {
           <div style={r ? S_.resultRow : undefined} className={r ? "rpm-resultrow" : undefined}>
             <div style={S_.col}>
           {SECTIONS.map((sec) => (
-            <div key={sec.id} style={{ ...S_.accordion, ...(r ? { borderLeft: `3px solid ${ACCENT}`, borderBottom: "none" } : {}) }}>
+            <div key={sec.id} style={{ ...S_.accordion, ...(r ? { borderLeft: `3px solid ${ACCENT}` } : {}) }}>
               <button
                 onClick={() => toggleSec(sec.id)}
                 style={{ ...S_.accBtn, ...(isOpen(sec.id) ? S_.accBtnOpen : {}) }}
@@ -2346,7 +2346,7 @@ function RetentionCalculatorInner() {
               cross-tabulated figure.
             </p>
           </div>
-          <div className="rpm-fwpair" style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 16, alignItems: "stretch", marginBottom: 16 }}>
+          <div className="rpm-fwpair" style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 28, alignItems: "stretch", marginBottom: 16 }}>
             {/* LEFT — potential matches + likely-to-date + relationship potential */}
             <div style={{ ...S_.availBox, marginBottom: 0 }}>
               <div style={S_.availBoxNum}>{availability.final.toLocaleString()}<span style={S_.availBoxNumLbl}>potential matches</span></div>
@@ -2547,8 +2547,8 @@ function RetentionCalculatorInner() {
                   <th style={S_.ladderThR}>Median income</th>
                   <th style={S_.ladderThR}>Price to keep her</th>
                   <th style={S_.ladderThR}>Your income rank</th>
-                  <th style={S_.ladderThC}>In her pool</th>
-                  <th style={S_.ladderThC}>Can you afford her</th>
+                  <th style={S_.ladderThR}>In her pool</th>
+                  <th style={S_.ladderThR}>Can you afford her</th>
                 </tr>
               </thead>
               <tbody>
@@ -2559,10 +2559,10 @@ function RetentionCalculatorInner() {
                     <td style={S_.ladderTdR}>{FMT(row.medHH)}</td>
                     <td style={{ ...S_.ladderTdR, fontWeight: 600 }}>{FMT(row.S)}</td>
                     <td style={S_.ladderTdR}>{Math.round(row.compPct)}{ordinal(Math.round(row.compPct))}</td>
-                    <td style={{ ...S_.ladderTdC, color: row.inPool ? "#1a6b4a" : ACCENT, fontWeight: 600 }}>
+                    <td style={{ ...S_.ladderTdC, textAlign: "right", color: row.inPool ? "#1a6b4a" : ACCENT, fontWeight: 600 }}>
                       {row.inPool ? "in" : "priced out"}
                     </td>
-                    <td style={{ ...S_.ladderTdC, color: row.grossGap <= 0 ? "#1a6b4a" : ACCENT, fontWeight: 600 }}>
+                    <td style={{ ...S_.ladderTdC, textAlign: "right", color: row.grossGap <= 0 ? "#1a6b4a" : ACCENT, fontWeight: 600 }}>
                       {row.grossGap <= 0 ? "yes" : "no"}
                     </td>
                   </tr>
