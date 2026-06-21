@@ -2092,10 +2092,9 @@ function RetentionCalculatorInner() {
                   <div style={S_.emptyText}>
                     Her market is built from real federal data, not estimates: Census ACS 5-year income,
                     earnings, education, and age (2023), CDC PLACES adult obesity (2024), and the national
-                    income distribution (2024–25). Everything you see is drawn from a stored snapshot of more
-                    than 30,000 ZIP codes, so the model runs instantly and never calls a live server. We
-                    refresh that snapshot on a yearly cycle as new federal data publishes, so the numbers
-                    stay current without ever leaving your browser.
+                    income distribution (2024–25) along with public dating app studies and survey results.
+                    We harvest this data for every U.S. ZIP code annually and we refresh that snapshot on a
+                    yearly cycle as new federal data publishes.
                   </div>
                 </div>
                 <div style={S_.exCard}>
