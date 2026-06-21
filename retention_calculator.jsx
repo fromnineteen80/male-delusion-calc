@@ -2528,6 +2528,11 @@ function RetentionCalculatorInner() {
       </div>
       )}
 
+      {/* DIVIDER before already-full-width sections */}
+      {r && (
+        <div style={S_.fwDivider}><div style={S_.fwDividerLine} /></div>
+      )}
+
       {r && (
         <div style={S_.explore}>
           <div style={S_.exploreHead}>
