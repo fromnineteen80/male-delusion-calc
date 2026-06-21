@@ -1939,7 +1939,7 @@ function RetentionCalculatorInner() {
           <div style={r ? S_.resultRow : undefined} className={r ? "rpm-resultrow" : undefined}>
             <div style={S_.col}>
           {SECTIONS.map((sec) => (
-            <div key={sec.id} style={S_.accordion}>
+            <div key={sec.id} style={{ ...S_.accordion, ...(r ? { borderLeft: `3px solid ${ACCENT}` } : {}) }}>
               <button
                 onClick={() => toggleSec(sec.id)}
                 style={{ ...S_.accBtn, ...(isOpen(sec.id) ? S_.accBtnOpen : {}) }}
@@ -2097,7 +2097,7 @@ function RetentionCalculatorInner() {
                     yearly cycle as new federal data publishes.
                   </div>
                 </div>
-                <div style={{ ...S_.exCard, borderLeft: `1px solid ${LINE}` }}>
+                <div style={S_.exCard}>
                   <button
                     onClick={() => setExplainerOpen((v) => !v)}
                     style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0, textAlign: "left" }}
