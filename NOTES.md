@@ -50,8 +50,21 @@ Per CLAUDE.md (`Instructions.md`) §5, every build records its verification gate
 
 ### Data harvest
 - `zipData.js` shipped in-repo is the full national snapshot (30,618 ZCTAs, real ACS 2023
-  5-year + CDC PLACES values) and passes §5.5, so it was used as-is. The harvest script
-  (`harvest_snapshot.mjs`) was not re-run (no re-pull needed; pinned vintage unchanged).
+  5-year + CDC PLACES values) and passes §5.5, so it was used as-is.
+
+## 2026-06-21 — Fresh full national harvest (re-pull)
+
+Ran `harvest_snapshot.mjs` against the live Census API (ACS 2023 5-year + CDC PLACES +
+Gazetteer) to capture a fresh national snapshot and confirm reproducibility.
+- Wrote `zipData.js`: 30,618 ZCTAs, 23.32 MB raw / 5.81 MB gzipped. Centroids matched
+  30,618/30,618; 100 metro federal aggregates computed.
+- Differs from the prior committed file by ~15 KB (federal metro-aggregate section only).
+- **§5.5 data integrity: PASS** (30,618 ZIPs; 62269 real values; no collapsed fields).
+- **§5.2 value lock: PASS — unchanged.** ZIP 62269 / 50-mi / flat-neutral still returns
+  S=232962.41937396806, delivered=43160.697268375276, grossToKeep=577685.2153374266.
+- **§5.1 render/build: PASS** (vite build succeeds).
+- Architecture confirmed: the deployed app imports this static snapshot; zero runtime
+  Census calls. Census is contacted only at harvest/refresh time (annual + monthly check).
 
 ### Manual steps still required by a repo admin (cannot be done from the build env)
 - **Enable GitHub Pages** with source = **GitHub Actions** (Settings → Pages).
