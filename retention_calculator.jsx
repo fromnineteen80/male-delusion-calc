@@ -1728,6 +1728,7 @@ function RetentionCalculatorInner() {
   useEffect(() => {
     const showing = !!r && !calcExpanded;
     if (showing && !resultsShowing.current) {
+      setOpenSecs([]); // collapse all three accordion sections when results first appear
       if (typeof window !== "undefined" && window.scrollTo) {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
@@ -2087,7 +2088,6 @@ function RetentionCalculatorInner() {
                 <div style={S_.empty}>
                   <div style={S_.emptyHead}>
                     <div style={S_.emptyTitle}>Our Datasets</div>
-                    <div style={S_.emptyMark}>S = B × C × M</div>
                   </div>
                   <div style={S_.emptyText}>
                     Her market is built from real federal data, not estimates: Census ACS 5-year income,
