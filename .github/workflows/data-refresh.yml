@@ -1,0 +1,116 @@
+name: Data refresh
+
+# §5a — keep the harvested snapshot from silently rotting.
+#  • Monthly (1st, 00:00 UTC): cheap check for a newer ACS 5-year vintage than the
+#    one pinned in harvest_snapshot.mjs. ACS/PLACES publish ~annually, so most runs
+#    find nothing. If a newer vintage exists, open an issue (detect-and-flag) rather
+#    than guessing at possibly-changed variable codes — §5a's preferred fallback.
+#  • Annual (January): force a full re-harvest of the pinned vintage, run the
+#    verification gates, and only commit the new zipData.js if they pass.
+on:
+  schedule:
+    - cron: "0 0 1 * *"   # monthly check, 1st of every month 00:00 UTC
+  workflow_dispatch:
+    inputs:
+      force_rebuild:
+        description: "Force a full re-harvest + republish now"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+
+      # Read the vintage currently pinned in the harvester.
+      - id: pin
+        run: |
+          YEAR=$(grep -oE "data/[0-9]{4}/acs/acs5" harvest_snapshot.mjs | head -1 | grep -oE "[0-9]{4}")
+          echo "year=$YEAR" >> "$GITHUB_OUTPUT"
+          echo "Pinned ACS vintage: $YEAR"
+
+      # Probe Census for the next vintage. A successful response means a newer
+      # release exists and a manual bump is needed (variable codes may have changed).
+      - id: check
+        env:
+          CENSUS_KEY: ${{ secrets.CENSUS_KEY }}
+        run: |
+          NEXT=$(( ${{ steps.pin.outputs.year }} + 1 ))
+          URL="https://api.census.gov/data/$NEXT/acs/acs5?get=NAME&for=us:1"
+          if [ -n "$CENSUS_KEY" ]; then URL="$URL&key=$CENSUS_KEY"; fi
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+          echo "Probe $NEXT -> HTTP $CODE"
+          if [ "$CODE" = "200" ]; then echo "newer=$NEXT" >> "$GITHUB_OUTPUT"; fi
+
+      # Detect-and-flag: open an issue when a newer vintage appears. Do NOT auto-bump.
+      - if: steps.check.outputs.newer != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const next = "${{ steps.check.outputs.newer }}";
+            const title = `New ACS vintage available: ${next} — manual bump needed`;
+            const { data: existing } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo, state: "open", labels: "data-refresh" });
+            if (existing.some(i => i.title === title)) return;
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo, title, labels: ["data-refresh"],
+              body: [
+                `Census ACS 5-year **${next}** now responds, newer than the pinned vintage in \`harvest_snapshot.mjs\`.`,
+                ``,
+                `Per §5a, bump the year in \`harvest_snapshot.mjs\` (the ACS URL and the Gazetteer URL),`,
+                `re-run the harvest, run the §5 verification gates, and only then commit the new \`zipData.js\`.`,
+                `Do not auto-bump — variable codes can change between releases.`,
+              ].join("\n") });
+
+      # Annual rebuild (January) or manual force: re-harvest the pinned vintage,
+      # verify, and commit only if the gates pass.
+      - id: should
+        run: |
+          MONTH=$(date -u +%m)
+          if [ "${{ github.event.inputs.force_rebuild }}" = "true" ] || [ "$MONTH" = "01" ]; then
+            echo "go=1" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.should.outputs.go == '1'
+        env:
+          CENSUS_KEY: ${{ secrets.CENSUS_KEY }}
+        run: node harvest_snapshot.mjs
+
+      - if: steps.should.outputs.go == '1'
+        id: verify
+        run: |
+          node scripts/verify_data.mjs
+          npm run build
+
+      - if: steps.should.outputs.go == '1' && success()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- zipData.js; then
+            echo "No data change."
+          else
+            git add zipData.js
+            git commit -m "Refresh ACS/CDC snapshot (automated annual rebuild)"
+            git push
+          fi
+
+      # If the rebuild ran but a step failed, flag it and do not publish.
+      - if: steps.should.outputs.go == '1' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title: `Data refresh failed on ${new Date().toISOString().slice(0,10)} — not published`,
+              labels: ["data-refresh"],
+              body: "The automated re-harvest or its verification gates failed. The broken pull was NOT committed. Investigate the workflow run before republishing." });
