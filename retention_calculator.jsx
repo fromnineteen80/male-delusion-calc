@@ -224,6 +224,7 @@ const CSS = `
   .rpm-glide.open { grid-template-rows: 1fr; opacity: 1; }
   .rpm-glide > * { min-height: 0; overflow: hidden; }
   body { margin: 0; }
+  .rpm-metrorow:hover { background: var(--accent-bg); }
   select:focus, input:focus { outline: 2px solid ${ACCENT}; outline-offset: 1px; }
   .rpm-dd { position: relative; width: 100%; }
   .rpm-dd-btn { width: 100%; padding: 10px 36px 10px 12px; font-size: 13px; line-height: 1.4;
@@ -2553,16 +2554,16 @@ function RetentionCalculatorInner() {
               </thead>
               <tbody>
                 {exploreRows.map((row) => (
-                  <tr key={row.name}>
+                  <tr key={row.name} className="rpm-metrorow">
                     <td style={S_.ladderTdName}>{row.name}</td>
                     <td style={S_.ladderTdR}>{row.singleWomen.toLocaleString()}</td>
                     <td style={S_.ladderTdR}>{FMT(row.medHH)}</td>
                     <td style={{ ...S_.ladderTdR, fontWeight: 600 }}>{FMT(row.S)}</td>
                     <td style={S_.ladderTdR}>{Math.round(row.compPct)}{ordinal(Math.round(row.compPct))}</td>
-                    <td style={{ ...S_.ladderTdC, textAlign: "right", color: row.inPool ? "#1a6b4a" : ACCENT, fontWeight: 600 }}>
+                    <td style={{ ...S_.ladderTdR, color: row.inPool ? "#1a6b4a" : ACCENT, fontWeight: 600 }}>
                       {row.inPool ? "in" : "priced out"}
                     </td>
-                    <td style={{ ...S_.ladderTdC, textAlign: "right", color: row.grossGap <= 0 ? "#1a6b4a" : ACCENT, fontWeight: 600 }}>
+                    <td style={{ ...S_.ladderTdR, color: row.grossGap <= 0 ? "#1a6b4a" : ACCENT, fontWeight: 600 }}>
                       {row.grossGap <= 0 ? "yes" : "no"}
                     </td>
                   </tr>
