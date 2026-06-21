@@ -1577,27 +1577,36 @@ const SECTIONS = [
 ];
 
 function RetentionCalculatorInner() {
-  const [tier, setTier] = useState("");
-  const [fitness, setFitness] = useState(["any"]);
-  const [bmi, setBmi] = useState(["any"]);
-  const [height, setHeight] = useState("");
-  const [network, setNetwork] = useState("");
-  const [herIncome, setHerIncome] = useState(["any"]);
-  const [herEdu, setHerEdu] = useState("");
-  const [eduSelected, setEduSelected] = useState(["any"]); // checkboxes; "any" = neutral price + unfiltered count; else highest drives model, combo drives funnel
-  const [mobility, setMobility] = useState("");
-  const [herKids, setHerKids] = useState(["any"]);
-  const [ageBand, setAgeBand] = useState("");
-  const [importB, setImportB] = useState("");
-  const [pedigree, setPedigree] = useState("");
-  const [history, setHistory] = useState("");
-  const [sorting, setSorting] = useState("");
-  const [fatherhood, setFatherhood] = useState("");
+  // Persist the user's entries across refreshes/returns. Loaded once here; written by an
+  // effect below. The live-recompute is untouched — it still memoizes over these inputs.
+  const SAVE_KEY = "rpm.inputs.v1";
+  const saved = useRef((() => {
+    try { return (typeof window !== "undefined" && JSON.parse(window.localStorage.getItem(SAVE_KEY))) || {}; }
+    catch { return {}; }
+  })()).current;
+  const sv = (k, d) => (saved[k] !== undefined ? saved[k] : d);
 
-  const [yourIncome, setYourIncome] = useState(200000);
-  const [incomeGrowth, setIncomeGrowth] = useState(5); // % expected annual income growth
-  const [loverValue, setLoverValue] = useState(100); // Relational value, 0-100 step 10
-  const [friction, setFriction] = useState(0); // Friction she absorbs, 0-100 step 10
+  const [tier, setTier] = useState(() => sv("tier", ""));
+  const [fitness, setFitness] = useState(() => sv("fitness", ["any"]));
+  const [bmi, setBmi] = useState(() => sv("bmi", ["any"]));
+  const [height, setHeight] = useState(() => sv("height", ""));
+  const [network, setNetwork] = useState(() => sv("network", ""));
+  const [herIncome, setHerIncome] = useState(() => sv("herIncome", ["any"]));
+  const [herEdu, setHerEdu] = useState(() => sv("herEdu", ""));
+  const [eduSelected, setEduSelected] = useState(() => sv("eduSelected", ["any"])); // checkboxes; "any" = neutral price + unfiltered count; else highest drives model, combo drives funnel
+  const [mobility, setMobility] = useState(() => sv("mobility", ""));
+  const [herKids, setHerKids] = useState(() => sv("herKids", ["any"]));
+  const [ageBand, setAgeBand] = useState(() => sv("ageBand", ""));
+  const [importB, setImportB] = useState(() => sv("importB", ""));
+  const [pedigree, setPedigree] = useState(() => sv("pedigree", ""));
+  const [history, setHistory] = useState(() => sv("history", ""));
+  const [sorting, setSorting] = useState(() => sv("sorting", ""));
+  const [fatherhood, setFatherhood] = useState(() => sv("fatherhood", ""));
+
+  const [yourIncome, setYourIncome] = useState(() => sv("yourIncome", 200000));
+  const [incomeGrowth, setIncomeGrowth] = useState(() => sv("incomeGrowth", 5)); // % expected annual income growth
+  const [loverValue, setLoverValue] = useState(() => sv("loverValue", 100)); // Relational value, 0-100 step 10
+  const [friction, setFriction] = useState(() => sv("friction", 0)); // Friction she absorbs, 0-100 step 10
 
   const [openSecs, setOpenSecs] = useState(["her"]);
   const isOpen = (id) => openSecs.includes(id);
@@ -1608,22 +1617,22 @@ function RetentionCalculatorInner() {
   const [disclaimOpen, setDisclaimOpen] = useState(false);
   const [footerOpen, setFooterOpen] = useState(false);
   const [matchesOpen, setMatchesOpen] = useState(false);
-  const [oliveTheme, setOliveTheme] = useState(true);
+  const [oliveTheme, setOliveTheme] = useState(() => sv("oliveTheme", true));
   const [activeExplain, setActiveExplain] = useState(null); // label of the most recently changed question
   const [explainVisible, setExplainVisible] = useState(true); // drives the fade out/in on change
 
   // ---- federal data (bundled snapshot) ----
-  const [targetZip, setTargetZip] = useState("");
-  const [live, setLive] = useState(null); // { medHHIncome, eduShareBplus, obesity, label }
+  const [targetZip, setTargetZip] = useState(() => sv("targetZip", ""));
+  const [live, setLive] = useState(() => sv("live", null)); // { medHHIncome, eduShareBplus, obesity, label }
   // availability funnel inputs
-  const [availRace, setAvailRace] = useState(["any"]);
-  const [availMarital, setAvailMarital] = useState(["any"]);
-  const [ageLo, setAgeLo] = useState(18);
-  const [ageHi, setAgeHi] = useState(65);
-  const [ageTouched, setAgeTouched] = useState(false);
-  const [radiusMi, setRadiusMi] = useState(50);
-  const [liveStatus, setLiveStatus] = useState("idle"); // idle|ok|error
-  const [liveMsg, setLiveMsg] = useState("");
+  const [availRace, setAvailRace] = useState(() => sv("availRace", ["any"]));
+  const [availMarital, setAvailMarital] = useState(() => sv("availMarital", ["any"]));
+  const [ageLo, setAgeLo] = useState(() => sv("ageLo", 18));
+  const [ageHi, setAgeHi] = useState(() => sv("ageHi", 65));
+  const [ageTouched, setAgeTouched] = useState(() => sv("ageTouched", false));
+  const [radiusMi, setRadiusMi] = useState(() => sv("radiusMi", 50));
+  const [liveStatus, setLiveStatus] = useState(() => (sv("live", null) ? "ok" : "idle")); // idle|ok|error
+  const [liveMsg, setLiveMsg] = useState(() => { const L = sv("live", null); return L && L.label ? "Loaded ZIP " + L.label : ""; });
 
   const fetchLive = useCallback(() => {
     const z = targetZip.trim();
@@ -1641,6 +1650,36 @@ function RetentionCalculatorInner() {
     setLiveStatus("ok");
     setLiveMsg("Loaded ZIP " + z);
   }, [targetZip]);
+
+  // Save every entry so a refresh or return preserves the user's work.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(SAVE_KEY, JSON.stringify({
+        tier, fitness, bmi, height, network, herIncome, herEdu, eduSelected, mobility,
+        herKids, ageBand, importB, pedigree, history, sorting, fatherhood,
+        yourIncome, incomeGrowth, loverValue, friction, oliveTheme,
+        targetZip, live, availRace, availMarital, ageLo, ageHi, ageTouched, radiusMi,
+      }));
+    } catch {}
+  }, [tier, fitness, bmi, height, network, herIncome, herEdu, eduSelected, mobility,
+      herKids, ageBand, importB, pedigree, history, sorting, fatherhood,
+      yourIncome, incomeGrowth, loverValue, friction, oliveTheme,
+      targetZip, live, availRace, availMarital, ageLo, ageHi, ageTouched, radiusMi]);
+
+  // Start over: clear the saved entries and reset every input to its default.
+  const resetAll = useCallback(() => {
+    if (typeof window !== "undefined" && !window.confirm("Start over? This clears all your current entries.")) return;
+    try { if (typeof window !== "undefined") window.localStorage.removeItem(SAVE_KEY); } catch {}
+    setTier(""); setFitness(["any"]); setBmi(["any"]); setHeight(""); setNetwork("");
+    setHerIncome(["any"]); setHerEdu(""); setEduSelected(["any"]); setMobility(""); setHerKids(["any"]);
+    setAgeBand(""); setImportB(""); setPedigree(""); setHistory(""); setSorting(""); setFatherhood("");
+    setYourIncome(200000); setIncomeGrowth(5); setLoverValue(100); setFriction(0);
+    setTargetZip(""); setLive(null); setAvailRace(["any"]); setAvailMarital(["any"]);
+    setAgeLo(18); setAgeHi(65); setAgeTouched(false); setRadiusMi(50);
+    setLiveStatus("idle"); setLiveMsg(""); setCalcExpanded(false); setActiveExplain(null);
+    setOpenSecs(["her"]);
+  }, []);
 
 
   // Route the new questionnaire controls to the model. Age range -> population-weighted
@@ -1855,6 +1894,12 @@ function RetentionCalculatorInner() {
       <div style={S_.grid} className="rpm-grid">
         {/* INPUT COLUMN */}
         <div style={{ ...S_.col, ...(r && !calcExpanded ? { gridColumn: "1 / -1" } : {}) }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
+            <button onClick={resetAll} style={{ ...S_.collapseLink, gap: 6 }} title="Clear all entries and start over" aria-label="Start over">
+              <span className="material-symbols-outlined" style={{ fontSize: 15, color: ACCENT, display: "block" }} aria-hidden="true">restart_alt</span>
+              Start over
+            </button>
+          </div>
           {r && !calcExpanded ? (
             <div style={S_.resultRow} className="rpm-resultrow">
               <div style={S_.calcCollapsed} onClick={() => { setCalcExpanded(true); setOpenSecs([]); }}>
