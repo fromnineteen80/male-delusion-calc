@@ -714,6 +714,7 @@ const HERINCOME_EXPLAIN = {
 // which local Census share the funnel counts against. Reads dataset fields eduShareBplus/
 // eduShareGrad/eduShareAssoc for the COUNT, but those keys are unchanged by this migration.
 const EDU_OPTS = [
+  { id: "any",      label: "Any",                                 priceV: null, rank: -1, acsBucket: null },
   { id: "eduHS",    label: "High school or less",                 priceV: 0.0,  rank: 0, acsBucket: "sub" },
   { id: "eduSome",  label: "Some college",                        priceV: 0.02, rank: 1, acsBucket: "sub" },
   { id: "eduAssoc", label: "Associate's degree or trade school",  priceV: 0.05, rank: 2, acsBucket: "assoc" },
@@ -1051,7 +1052,7 @@ function highestEdu(selected) {
 // and below. We sum the shares for whichever buckets the selection touches, keyed by the
 // acsBucket tag on each record.
 function eduSelectShare(selected, eduShareBplus, eduShareAssoc, eduShareGrad) {
-  if (!selected || !selected.length) return 1;
+  if (!selected || !selected.length || selected.includes("any")) return 1;
   const bplus = eduShareBplus != null ? eduShareBplus : 0.35;
   const grad = eduShareGrad != null ? eduShareGrad : 0.13;
   const assoc = eduShareAssoc != null ? eduShareAssoc : 0.08;
@@ -1583,7 +1584,7 @@ function RetentionCalculatorInner() {
   const [network, setNetwork] = useState("");
   const [herIncome, setHerIncome] = useState(["any"]);
   const [herEdu, setHerEdu] = useState("");
-  const [eduSelected, setEduSelected] = useState([]); // checkboxes; highest drives model, combo drives funnel
+  const [eduSelected, setEduSelected] = useState(["any"]); // checkboxes; "any" = neutral price + unfiltered count; else highest drives model, combo drives funnel
   const [mobility, setMobility] = useState("");
   const [herKids, setHerKids] = useState(["any"]);
   const [ageBand, setAgeBand] = useState("");
@@ -1724,10 +1725,12 @@ function RetentionCalculatorInner() {
   }, [inputs]);
 
   // Running explainer stack: one entry per dropdown the user has picked, in calculator order.
-  const eduStackText = eduSelected.length
-    ? "Pricing uses the highest level selected (" + (EDU_BY_ID[modelHighestEdu] ? EDU_BY_ID[modelHighestEdu].label : "") + "); the availability count uses all "
-      + eduSelected.length + " selected. More schooling tends to raise her expectations of a partner."
-    : null;
+  const eduStackText = !eduSelected.length
+    ? null
+    : eduSelected.includes("any")
+    ? "Any education: pricing applies a neutral expectation nudge, and the availability count includes every education level."
+    : "Pricing uses the highest level selected (" + (EDU_BY_ID[modelHighestEdu] ? EDU_BY_ID[modelHighestEdu].label : "") + "); the availability count uses all "
+      + eduSelected.length + " selected. More schooling tends to raise her expectations of a partner.";
   const ageStackText = "Her age range " + ageLo + " to " + ageHi + ". Pricing population-weights this range into one optionality multiplier; the count uses it to size the age pool.";
   // Full question list with current choices, BEFORE filtering. Tracking must see every
   // question (even unanswered ones) so a first-time answer registers as a change. The
@@ -2277,6 +2280,11 @@ function RetentionCalculatorInner() {
         </div>
       )}
 
+      {/* DIVIDER before already-full-width sections */}
+      {ladder && r && (
+        <div style={S_.fwDivider}><div style={S_.fwDividerLine} /></div>
+      )}
+
       {/* FAMILY OF FOUR OUTLOOK */}
       {ladder && r && (
         <div style={S_.ladderWrap}>
@@ -2333,6 +2341,11 @@ function RetentionCalculatorInner() {
             without cutting into it.
           </div>
         </div>
+      )}
+
+      {/* DIVIDER before already-full-width sections */}
+      {r && (
+        <div style={S_.fwDivider}><div style={S_.fwDividerLine} /></div>
       )}
 
       {/* DIVORCE REALITY CHECK */}
