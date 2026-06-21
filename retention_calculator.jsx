@@ -1783,7 +1783,7 @@ function RetentionCalculatorInner() {
         inputs
       );
       const singleWomen = (d.singleWomen != null ? d.singleWomen : METRO_SINGLE_WOMEN[name]) || 0;
-      return { name, medHH: d.medHH, S: res.S, compPct: res.compPct, entryPct: res.entryPct, inPool: res.inPool, vClass: res.vClass, singleWomen };
+      return { name, medHH: d.medHH, S: res.S, compPct: res.compPct, entryPct: res.entryPct, inPool: res.inPool, vClass: res.vClass, grossGap: res.grossGap, singleWomen };
     }).sort((a, b) => b.singleWomen - a.singleWomen || b.S - a.S).slice(0, 40);
   }, [inputs]);
 
@@ -2280,15 +2280,15 @@ function RetentionCalculatorInner() {
           </div>
 
           <div style={S_.fwQuad} className="rpm-fwquad">
-            <Term label="B · upkeep floor" val={FMT(r.B)} note="from local income" />
-            <Term label="C · comparison intensity" val={"×" + r.C.toFixed(2)} note="network-driven" hot={r.C >= 2.0} />
-            <Term label="M · mobility" val={"×" + r.M.toFixed(2)} note="reach × age" />
-            <Term label="k · history discount" val={"×" + r.k.toFixed(2)} note="on relational value" />
+            <Term label="Her lifestyle cost" val={FMT(r.B)} note="real local dollars" />
+            <Term label="Comparison pressure" val={"×" + r.C.toFixed(2)} note="how rich her circle is" hot={r.C >= 2.0} />
+            <Term label="Her reach" val={"×" + r.M.toFixed(2)} note="her ability to leave" />
+            <Term label="Attraction discount" val={"×" + r.k.toFixed(2)} note="your green flags' value" />
           </div>
 
           <div style={S_.fwDuo} className="rpm-fwduo">
             <div style={S_.vCard}>
-              <div style={{ ...S_.cardTitle, marginBottom: 14 }}>Your delivered value · V − F</div>
+              <div style={{ ...S_.cardTitle, marginBottom: 14 }}>Your delivered value</div>
               <VRow label="Provider value (Vp)" val={FMT(r.Vp)} pos />
               <VRow label="Relational value after discount" val={"+ " + FMT(r.loverOffset)} pos />
               <VRow label="Friction she absorbs (F)" val={"− " + FMT(r.F)} />
@@ -2385,7 +2385,7 @@ function RetentionCalculatorInner() {
                   Of the women you would match with, about <strong>{Math.round(mutual.attractShare * 100)}%</strong> are likely
                   drawn to a man at your standing in the local field ({Math.round(availability.final * mutual.attractShare).toLocaleString()} likely
                   to date you), and of those roughly <strong>{Math.round(mutual.commitShare * 100)}%</strong> would
-                  commit given your delivered value against her price. The overlap is your realistic pool.
+                  commit given your delivered value against her price. The overlap is your best chance at a relationship locally.
                 </div>
               )}
             </div>
@@ -2544,10 +2544,11 @@ function RetentionCalculatorInner() {
                 <tr>
                   <th style={S_.ladderTh}>Metro</th>
                   <th style={S_.ladderThR}>Single women 18-64</th>
-                  <th style={S_.ladderThR}>Median household income</th>
+                  <th style={S_.ladderThR}>Median income</th>
                   <th style={S_.ladderThR}>Price to keep her</th>
                   <th style={S_.ladderThR}>Your income rank</th>
                   <th style={S_.ladderThC}>In her pool</th>
+                  <th style={S_.ladderThC}>Can you afford her</th>
                 </tr>
               </thead>
               <tbody>
@@ -2560,6 +2561,9 @@ function RetentionCalculatorInner() {
                     <td style={S_.ladderTdR}>{Math.round(row.compPct)}{ordinal(Math.round(row.compPct))}</td>
                     <td style={{ ...S_.ladderTdC, color: row.inPool ? "#1a6b4a" : ACCENT, fontWeight: 600 }}>
                       {row.inPool ? "in" : "priced out"}
+                    </td>
+                    <td style={{ ...S_.ladderTdC, color: row.grossGap <= 0 ? "#1a6b4a" : ACCENT, fontWeight: 600 }}>
+                      {row.grossGap <= 0 ? "yes" : "no"}
                     </td>
                   </tr>
                 ))}
@@ -2925,8 +2929,14 @@ function Sel({ v, set, opts }) {
 function Num({ v, set, step, min, max }) {
   return (
     <input
-      type="number" value={v} step={step} min={min} max={max}
-      onChange={(e) => set(Math.max(min, Math.min(max, Number(e.target.value) || 0)))}
+      type="text"
+      inputMode="numeric"
+      value={v != null && v !== "" ? "$" + Number(v).toLocaleString() : ""}
+      onChange={(e) => {
+        const digits = e.target.value.replace(/[^0-9]/g, "");
+        const n = digits === "" ? min : Number(digits);
+        set(Math.max(min, Math.min(max, n)));
+      }}
       style={S_.numInput}
     />
   );
