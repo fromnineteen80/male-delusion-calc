@@ -1710,6 +1710,23 @@ function RetentionCalculatorInner() {
     });
   }, [live, targetZip, ageLo, ageHi, radiusMi, availRace, availMarital, tier, fitness, eduSelected, herIncome, fatherhood]);
 
+  // Of the potential matches, how many are likely both attracted to him AND would commit.
+  // Two graduated gates built only from quantities the model already computes (no new
+  // free constants — both spreads ride the model's existing uncertainty band, bandPct):
+  //   attracted  = his local-male income percentile (compPct) vs her suitor-pool entry bar
+  //                (entryPct), softened over bandPct expressed in percentile points.
+  //   commits    = his delivered-value surplus over her price (margin / S), centered at the
+  //                break-even and softened over the same relative band.
+  const mutual = useMemo(() => {
+    if (!availability || !r) return null;
+    const sigmoid = (x) => 1 / (1 + Math.exp(-x));
+    const spreadPts = Math.max(6, r.bandPct * 100);
+    const attractShare = Math.max(0, Math.min(1, sigmoid((r.compPct - r.entryPct) / spreadPts)));
+    const commitShare = Math.max(0, Math.min(1, sigmoid((r.margin / r.S) / r.bandPct)));
+    const realistic = Math.round(availability.final * attractShare * commitShare);
+    return { attractShare, commitShare, realistic };
+  }, [availability, r]);
+
   // Explore: run the same profile across every candidate metro, rank by single women
   // 18-64 (the once-a-year harvested count), and slice to the displayed top 40. Starting
   // from a 100-metro pool guarantees the displayed 40 are the true top 40.
@@ -2243,17 +2260,52 @@ function RetentionCalculatorInner() {
               cross-tabulated figure.
             </p>
           </div>
-          <div style={S_.availBox}>
-            <div style={S_.availBoxNum}>{availability.final.toLocaleString()}<span style={S_.availBoxNumLbl}>potential matches</span></div>
-            <div style={S_.availBoxText}>
-              Estimated women within {availability.radius} miles who match the age, race,
-              single status, attractiveness, education, and openness filters you set.
-              {availability.singleWomenAll > 0 && (
-                <> That is <strong>{fmtTinyPct(availability.final, availability.singleWomenAll)}</strong> of
-                the {availability.singleWomenAll.toLocaleString()} single women (18-64)
-                in the radius.</>
-              )}
+          <div className="rpm-fwpair" style={{ display: "grid", gridTemplateColumns: "3fr 1fr 1fr", gap: 16, alignItems: "stretch", marginBottom: 16 }}>
+            {/* LEFT (60%) — potential matches, unchanged */}
+            <div style={{ ...S_.availBox, marginBottom: 0 }}>
+              <div style={S_.availBoxNum}>{availability.final.toLocaleString()}<span style={S_.availBoxNumLbl}>potential matches</span></div>
+              <div style={S_.availBoxText}>
+                Estimated women within {availability.radius} miles who match the age, race,
+                single status, attractiveness, education, and openness filters you set.
+                {availability.singleWomenAll > 0 && (
+                  <> That is <strong>{fmtTinyPct(availability.final, availability.singleWomenAll)}</strong> of
+                  the {availability.singleWomenAll.toLocaleString()} single women (18-64)
+                  in the radius.</>
+                )}
+              </div>
             </div>
+
+            {/* MIDDLE (20%) — context, styled like the delivered-value (V−F) card */}
+            <div style={S_.vCard}>
+              <div style={S_.cardTitle}>Your pool in context</div>
+              {availability.singleWomenAll > 0 && (
+                <VRow label="Of single women 18-64" val={fmtTinyPct(availability.final, availability.singleWomenAll)} />
+              )}
+              {availability.steps && availability.steps[0] && availability.steps[0].n > 0 && (
+                <VRow label="Of your age-range pool" val={fmtTinyPct(availability.final, availability.steps[0].n)} />
+              )}
+              {availability.singleWomenAll > 0 && availability.final > 0 && (
+                <VRow label="Single women per match" val={"1 in " + Math.max(1, Math.round(availability.singleWomenAll / availability.final)).toLocaleString()} />
+              )}
+              <div style={S_.vTotal}>
+                <span>Potential matches</span>
+                <span>{availability.final.toLocaleString()}</span>
+              </div>
+            </div>
+
+            {/* RIGHT (20%) — likely to date you, styled like the bottom-line card (no dark fill) */}
+            {mutual && (
+            <div style={{ ...S_.bottomLine, background: "var(--surface)", color: INK }}>
+              <div style={{ ...S_.blLabel, color: ACCENT }}>Likely To Date &amp; Commit</div>
+              <div style={{ ...S_.blNum, fontSize: 30 }} className="rpm-bignum">{mutual.realistic.toLocaleString()}<span style={{ ...S_.blYr, color: "var(--warmdk2)", fontSize: 14 }}>realistic matches</span></div>
+              <div style={S_.blExplain}>
+                Of your potential matches, about <strong>{Math.round(mutual.attractShare * 100)}%</strong> are
+                likely drawn to a man at your standing in the local field, and of those roughly{" "}
+                <strong>{Math.round(mutual.commitShare * 100)}%</strong> would commit given your delivered
+                value against her price. The overlap is your realistic pool.
+              </div>
+            </div>
+            )}
           </div>
           <div style={S_.funnelWrap}>
             {availability.steps.map((s, i) => {
