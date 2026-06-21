@@ -2309,10 +2309,16 @@ function RetentionCalculatorInner() {
               cross-tabulated figure.
             </p>
           </div>
-          <div className="rpm-fwpair" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, alignItems: "stretch", marginBottom: 16 }}>
-            {/* LEFT — potential matches, unchanged */}
+          <div className="rpm-fwpair" style={{ display: "grid", gridTemplateColumns: "3fr 2fr", gap: 16, alignItems: "stretch", marginBottom: 16 }}>
+            {/* LEFT — potential matches + likely-to-date + relationship potential */}
             <div style={{ ...S_.availBox, marginBottom: 0 }}>
               <div style={S_.availBoxNum}>{availability.final.toLocaleString()}<span style={S_.availBoxNumLbl}>potential matches</span></div>
+              {mutual && (
+                <div style={{ ...S_.availBoxNum, marginTop: 14 }}>{Math.round(availability.final * mutual.attractShare).toLocaleString()}<span style={S_.availBoxNumLbl}>likely to date you</span></div>
+              )}
+              {mutual && (
+                <div style={{ ...S_.availBoxNum, marginTop: 14 }}>{Math.round(mutual.commitShare * 100)}%<span style={S_.availBoxNumLbl}>relationship potential</span></div>
+              )}
               <div style={S_.availBoxText}>
                 Estimated women within {availability.radius} miles who match the age, race,
                 single status, attractiveness, education, and openness filters you set.
@@ -2323,6 +2329,14 @@ function RetentionCalculatorInner() {
                   every 10,000 single women within {availability.radius} miles.</>
                 )}
               </div>
+              {mutual && (
+                <div style={S_.availBoxText}>
+                  Of those, about <strong>{Math.round(mutual.attractShare * 100)}%</strong> are likely drawn to a man
+                  at your standing in the local field ({Math.round(availability.final * mutual.attractShare).toLocaleString()} likely
+                  to date you), and of those roughly <strong>{Math.round(mutual.commitShare * 100)}%</strong> would
+                  commit given your delivered value against her price. The overlap is your realistic pool.
+                </div>
+              )}
             </div>
 
             {/* MIDDLE — context, styled like the delivered-value (V−F) card */}
@@ -2342,20 +2356,6 @@ function RetentionCalculatorInner() {
                 <span>{availability.final.toLocaleString()}</span>
               </div>
             </div>
-
-            {/* RIGHT (20%) — likely to date you, styled like the bottom-line card (no dark fill) */}
-            {mutual && (
-            <div style={{ ...S_.bottomLine, background: "var(--surface)", color: INK }}>
-              <div style={{ ...S_.blLabel, color: ACCENT }}>Likely To Date &amp; Commit</div>
-              <div style={{ ...S_.blNum, fontSize: 30 }} className="rpm-bignum">{mutual.realistic.toLocaleString()}<span style={{ ...S_.blYr, color: "var(--warmdk2)", fontSize: 14 }}>realistic matches</span></div>
-              <div style={S_.blExplain}>
-                Of your potential matches, about <strong>{Math.round(mutual.attractShare * 100)}%</strong> are
-                likely drawn to a man at your standing in the local field, and of those roughly{" "}
-                <strong>{Math.round(mutual.commitShare * 100)}%</strong> would commit given your delivered
-                value against her price. The overlap is your realistic pool.
-              </div>
-            </div>
-            )}
           </div>
           <div style={S_.funnelWrap}>
             {availability.steps.map((s, i) => {
