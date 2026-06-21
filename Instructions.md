@@ -162,6 +162,13 @@ hosting.
   inline. That split is intentional.
 - **Data:** the app imports `zipData.js` (the harvested snapshot), not a live API. Confirm the
   import resolves and the full ZIP set is present.
+- **Top-40 metro table:** it reads `window.METRO_DATA` and `window.METRO_SINGLE_WOMEN`, which the
+  harvest emits in `zipData.js` (100 metros). Until those globals are populated the table
+  correctly shows the built-in fallback with a zeroed ranking. The integrator must assign both
+  `zipData.js` exports onto the window globals **before** `retention_calculator.jsx` evaluates
+  (the component reads them at module load). This is done in `src/metroGlobals.js`, imported first
+  in `src/main.jsx`; the component's `window.*` seam is unchanged. With the globals set, the table
+  ranks all 100 metros by real single-women counts and slices the true top 40 — no logic change.
 - **External resources (keep all of them):** the only runtime external dependencies are two
   Google Fonts, loaded by `@import` from `fonts.googleapis.com` and already present in
   `retention_calculator.css`:
