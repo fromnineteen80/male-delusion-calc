@@ -1240,7 +1240,7 @@ function computeAvailability(ZIP_DATA, centerZip, opts) {
   const [clat, clon] = center.ll;
   const { ageLo, ageHi, race, maritalSet, tier, fitness, eduSelected, kidsOk, incomeSet } = opts;
 
-  let rawWomen = 0, zipsInRange = 0, popInRange = 0, singleWomenAll = 0;
+  let rawWomen = 0, zipsInRange = 0, popInRange = 0, singleWomenAll = 0, singleWomenInRange = 0;
   for (const z of Object.keys(ZIP_DATA)) {
     const d = ZIP_DATA[z];
     if (!d.ll) continue;
@@ -1250,6 +1250,9 @@ function computeAvailability(ZIP_DATA, centerZip, opts) {
     rawWomen += womenInAgeRange(d.women, ageLo, ageHi);
     // every single woman of dating age (18-64) in this ZIP, via the universal helper
     singleWomenAll += singleWomen18to64(d);
+    // single women specifically within the user's selected age range (isolates the age slider)
+    const singleRate = d.marital ? ((d.marital.neverMarried || 0) + (d.marital.separated || 0) + (d.marital.divorced || 0)) : 0;
+    singleWomenInRange += womenInAgeRange(d.women, ageLo, ageHi) * singleRate;
   }
   if (!zipsInRange) return null;
 
@@ -1274,6 +1277,7 @@ function computeAvailability(ZIP_DATA, centerZip, opts) {
   return {
     radius: opts.radius, zipsInRange, popInRange,
     singleWomenAll: Math.round(singleWomenAll),
+    singleWomenInRange: Math.round(singleWomenInRange),
     rawWomen: Math.round(rawWomen),
     shares: { race: rShare, single: sShare, income: iShare, desire: dShare, edu: eShare, kids: kShare },
     steps: [
@@ -2305,8 +2309,8 @@ function RetentionCalculatorInner() {
               cross-tabulated figure.
             </p>
           </div>
-          <div className="rpm-fwpair" style={{ display: "grid", gridTemplateColumns: "3fr 1fr 1fr", gap: 16, alignItems: "stretch", marginBottom: 16 }}>
-            {/* LEFT (60%) — potential matches, unchanged */}
+          <div className="rpm-fwpair" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, alignItems: "stretch", marginBottom: 16 }}>
+            {/* LEFT — potential matches, unchanged */}
             <div style={{ ...S_.availBox, marginBottom: 0 }}>
               <div style={S_.availBoxNum}>{availability.final.toLocaleString()}<span style={S_.availBoxNumLbl}>potential matches</span></div>
               <div style={S_.availBoxText}>
@@ -2315,19 +2319,20 @@ function RetentionCalculatorInner() {
                 {availability.singleWomenAll > 0 && (
                   <> That is <strong>{fmtTinyPct(availability.final, availability.singleWomenAll)}</strong> of
                   the {availability.singleWomenAll.toLocaleString()} single women (18-64)
-                  in the radius.</>
+                  in the radius — about <strong>{Math.max(0, Math.round(availability.final / availability.singleWomenAll * 10000)).toLocaleString()}</strong> in
+                  every 10,000 single women within {availability.radius} miles.</>
                 )}
               </div>
             </div>
 
-            {/* MIDDLE (20%) — context, styled like the delivered-value (V−F) card */}
+            {/* MIDDLE — context, styled like the delivered-value (V−F) card */}
             <div style={S_.vCard}>
               <div style={S_.cardTitle}>Your pool in context</div>
               {availability.singleWomenAll > 0 && (
                 <VRow label="Of single women 18-64" val={fmtTinyPct(availability.final, availability.singleWomenAll)} />
               )}
-              {availability.steps && availability.steps[0] && availability.steps[0].n > 0 && (
-                <VRow label="Of your age-range pool" val={fmtTinyPct(availability.final, availability.steps[0].n)} />
+              {availability.singleWomenInRange > 0 && (
+                <VRow label={"Of single women, ages " + ageLo + "-" + ageHi} val={fmtTinyPct(availability.final, availability.singleWomenInRange)} />
               )}
               {availability.singleWomenAll > 0 && availability.final > 0 && (
                 <VRow label="Single women per match" val={"1 in " + Math.max(1, Math.round(availability.singleWomenAll / availability.final)).toLocaleString()} />
