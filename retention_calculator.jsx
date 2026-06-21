@@ -40,7 +40,7 @@ const S_ = {
   emptyHead: { display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12 },
   emptyMark: { fontFamily: "inherit", fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 600, color: ACCENT, lineHeight: 1, whiteSpace: "nowrap" },
   emptyTitle: { fontSize: 14, fontWeight: 600, color: INK },
-  exCard: { border: `1px solid ${LINE}`, borderLeft: `3px solid ${ACCENT}`, background: "var(--surface)", padding: "13px 16px" },
+  exCard: { border: `1px solid ${LINE}`, background: "var(--surface)", padding: "13px 16px" },
   exCardTop: { display: "flex", flexDirection: "column", gap: 2, marginBottom: 7 },
   exCardLabel: { fontSize: 10.5, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--warm3)", fontWeight: 600 },
   exCardLabelRow: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 },
@@ -124,7 +124,7 @@ const S_ = {
   explainP: { margin: 0, fontSize: 13, color: "var(--warm1)", lineHeight: 1.5 },
   grid: { display: "grid", gridTemplateColumns: "minmax(320px, 1fr) minmax(340px, 1.05fr)", gap: 28, maxWidth: 1200, margin: "28px auto 0", padding: "0 32px", alignItems: "start" },
   col: { display: "flex", flexDirection: "column", gap: 14 },
-  accordion: { borderTop: `1px solid ${LINE}`, borderRight: `1px solid ${LINE}`, borderLeft: `1px solid ${LINE}`, background: "var(--paper2)" },
+  accordion: { border: `1px solid ${LINE}`, background: "var(--paper2)" },
   accBtn: { width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 18px", background: "none", border: "none", cursor: "pointer", textAlign: "left" },
   accBtnOpen: { borderBottom: `1px solid ${LINE}`, background: "var(--surface)" },
   accLabel: { display: "block", fontSize: 16, fontWeight: 600 },
@@ -1939,7 +1939,7 @@ function RetentionCalculatorInner() {
           <div style={r ? S_.resultRow : undefined} className={r ? "rpm-resultrow" : undefined}>
             <div style={S_.col}>
           {SECTIONS.map((sec) => (
-            <div key={sec.id} style={{ ...S_.accordion, ...(r ? { borderLeft: `3px solid ${ACCENT}` } : {}) }}>
+            <div key={sec.id} style={S_.accordion}>
               <button
                 onClick={() => toggleSec(sec.id)}
                 style={{ ...S_.accBtn, ...(isOpen(sec.id) ? S_.accBtnOpen : {}) }}
