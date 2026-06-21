@@ -2097,7 +2097,7 @@ function RetentionCalculatorInner() {
                     yearly cycle as new federal data publishes.
                   </div>
                 </div>
-                <div style={S_.exCard}>
+                <div style={{ ...S_.exCard, borderLeft: `1px solid ${LINE}` }}>
                   <button
                     onClick={() => setExplainerOpen((v) => !v)}
                     style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0, textAlign: "left" }}
