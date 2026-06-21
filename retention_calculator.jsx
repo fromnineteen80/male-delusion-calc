@@ -1624,6 +1624,7 @@ function RetentionCalculatorInner() {
   const [oliveTheme, setOliveTheme] = useState(() => sv("oliveTheme", true));
   const [activeExplain, setActiveExplain] = useState(null); // label of the most recently changed question
   const [explainVisible, setExplainVisible] = useState(true); // drives the fade out/in on change
+  const [confirmReset, setConfirmReset] = useState(false); // centered "start over" confirm modal
 
   // ---- federal data (bundled snapshot) ----
   const [targetZip, setTargetZip] = useState(() => sv("targetZip", ""));
@@ -1673,7 +1674,6 @@ function RetentionCalculatorInner() {
 
   // Start over: clear the saved entries and reset every input to its default.
   const resetAll = useCallback(() => {
-    if (typeof window !== "undefined" && !window.confirm("Start over? This clears all your current entries.")) return;
     try { if (typeof window !== "undefined") window.localStorage.removeItem(SAVE_KEY); } catch {}
     setTier(""); setFitness(["any"]); setBmi(["any"]); setHeight(""); setNetwork("");
     setHerIncome(["any"]); setHerEdu(""); setEduSelected(["any"]); setMobility(""); setHerKids(["any"]);
@@ -1683,6 +1683,7 @@ function RetentionCalculatorInner() {
     setAgeLo(18); setAgeHi(65); setAgeTouched(false); setRadiusMi(50);
     setLiveStatus("idle"); setLiveMsg(""); setCalcExpanded(false); setActiveExplain(null);
     setOpenSecs(["her"]);
+    setConfirmReset(false);
   }, []);
 
 
@@ -1865,6 +1866,35 @@ function RetentionCalculatorInner() {
     <div style={S_.wrap} className={"rpm-app" + (oliveTheme ? " rpm-olive" : "")}>
       <style>{CSS}</style>
 
+      {confirmReset && (
+        <div
+          onClick={() => setConfirmReset(false)}
+          role="dialog" aria-modal="true" aria-label="Start over"
+          style={{ position: "fixed", inset: 0, background: "rgba(22,24,29,0.55)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 20 }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ background: "var(--surface)", border: `2px solid ${INK}`, boxShadow: "0 18px 50px rgba(22,24,29,0.32)", padding: "26px 28px", maxWidth: 420, width: "100%" }}
+          >
+            <div style={{ fontFamily: "Georgia, serif", fontSize: 22, fontWeight: 400, color: INK, letterSpacing: "-0.01em" }}>Start over?</div>
+            <div style={{ fontSize: 13.5, color: "var(--warm1)", lineHeight: 1.55, marginTop: 8 }}>
+              This clears every entry — her profile, your numbers, and the ZIP and market settings —
+              and resets the calculator to a blank slate. This can't be undone.
+            </div>
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 24 }}>
+              <button
+                onClick={() => setConfirmReset(false)}
+                style={{ padding: "10px 18px", border: `1px solid ${LINE}`, background: "none", color: INK, cursor: "pointer", fontFamily: "inherit", fontWeight: 600, fontSize: 13 }}
+              >Cancel</button>
+              <button
+                onClick={resetAll}
+                style={{ padding: "10px 18px", border: `1px solid ${INK}`, background: INK, color: "#fff", cursor: "pointer", fontFamily: "inherit", fontWeight: 600, fontSize: 13 }}
+              >Start over</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <header style={S_.header}>
         <div style={S_.headerInner}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
@@ -1899,7 +1929,7 @@ function RetentionCalculatorInner() {
         {/* INPUT COLUMN */}
         <div style={{ ...S_.col, ...(r && !calcExpanded ? { gridColumn: "1 / -1" } : {}) }}>
           <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
-            <button onClick={resetAll} style={{ ...S_.collapseLink, gap: 6 }} title="Clear all entries and start over" aria-label="Start over">
+            <button onClick={() => setConfirmReset(true)} style={{ ...S_.collapseLink, gap: 6 }} title="Clear all entries and start over" aria-label="Start over">
               <span className="material-symbols-outlined" style={{ fontSize: 15, color: ACCENT, display: "block" }} aria-hidden="true">restart_alt</span>
               Start over
             </button>
