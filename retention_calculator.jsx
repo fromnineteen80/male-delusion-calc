@@ -2098,21 +2098,30 @@ function RetentionCalculatorInner() {
                     stay current without ever leaving your browser.
                   </div>
                 </div>
-                {activeCard && (
-                  <div style={S_.exCard}>
-                    <button
-                      onClick={() => setExplainerOpen((v) => !v)}
-                      style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0, textAlign: "left" }}
-                      aria-expanded={explainerOpen}
-                    >
-                      <span style={S_.exCardLabel}>Why this answer · {activeCard.label}</span>
-                      <span style={S_.chev}>{explainerOpen ? "−" : "+"}</span>
-                    </button>
-                    {explainerOpen && (
-                      <div style={{ ...S_.exCardText, marginTop: 10 }}>{activeCard.text}</div>
-                    )}
-                  </div>
-                )}
+                <div style={S_.exCard}>
+                  <button
+                    onClick={() => setExplainerOpen((v) => !v)}
+                    style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0, textAlign: "left" }}
+                    aria-expanded={explainerOpen}
+                  >
+                    <span style={S_.exCardLabel}>Data sources and outcomes</span>
+                    <span style={S_.chev}>{explainerOpen ? "−" : "+"}</span>
+                  </button>
+                  {explainerOpen && (
+                    <div style={{ ...S_.disclaim, marginTop: 10 }}>
+                      The upkeep floor, the comparison nudge, the fitness-scarcity pressure, and your
+                      income rank are anchored to real federal data for her ZIP: Census ACS county income
+                      and earnings (2023), CDC PLACES obesity (2024), and the national income
+                      distribution (2024–25). The money she interacts with regularly, her mobility, whether she's all in,
+                      and her history are things only you can read, and they carry the wider range shown
+                      on the right. Read this as a wake-up call, not a scoreboard. Modern hypergamy is real
+                      and well-documented, with social media, reality television, and dating apps driving
+                      expectations higher and placing more high-status men in front of her than any
+                      generation in history. Pretending otherwise is how men get blindsided. The
+                      only thing that moves your odds is becoming the man the number says you need to be.
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
