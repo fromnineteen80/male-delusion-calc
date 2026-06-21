@@ -2362,7 +2362,7 @@ function RetentionCalculatorInner() {
                 {availability.singleWomenAll > 0 && (
                   <> That is <strong>{fmtTinyPct(availability.final, availability.singleWomenAll)}</strong> of
                   the {availability.singleWomenAll.toLocaleString()} single women (18-64)
-                  in the radius — about <strong>{Math.max(0, Math.round(availability.final / availability.singleWomenAll * 10000)).toLocaleString()}</strong> in
+                  in the radius you specified, or about <strong>{Math.max(0, Math.round(availability.final / availability.singleWomenAll * 10000)).toLocaleString()}</strong> in
                   every 10,000 single women within {availability.radius} miles.</>
                 )}
               </div>
