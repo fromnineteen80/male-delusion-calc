@@ -1625,6 +1625,7 @@ function RetentionCalculatorInner() {
   const [activeExplain, setActiveExplain] = useState(null); // label of the most recently changed question
   const [explainVisible, setExplainVisible] = useState(true); // drives the fade out/in on change
   const [confirmReset, setConfirmReset] = useState(false); // centered "start over" confirm modal
+  const [explainerOpen, setExplainerOpen] = useState(false); // expandable explainer card beside the accordion once results show
 
   // ---- federal data (bundled snapshot) ----
   const [targetZip, setTargetZip] = useState(() => sv("targetZip", ""));
@@ -1927,50 +1928,15 @@ function RetentionCalculatorInner() {
 
       <div style={S_.grid} className="rpm-grid">
         {/* INPUT COLUMN */}
-        <div style={{ ...S_.col, ...(r && !calcExpanded ? { gridColumn: "1 / -1" } : {}) }}>
+        <div style={{ ...S_.col, ...(r ? { gridColumn: "1 / -1" } : {}) }}>
           <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
             <button onClick={() => setConfirmReset(true)} style={{ ...S_.collapseLink, gap: 6 }} title="Clear all entries and start over" aria-label="Start over">
               <span className="material-symbols-outlined" style={{ fontSize: 15, color: ACCENT, display: "block" }} aria-hidden="true">restart_alt</span>
               Start over
             </button>
           </div>
-          {r && !calcExpanded ? (
-            <div style={S_.resultRow} className="rpm-resultrow">
-              <div style={S_.calcCollapsed} onClick={() => { setCalcExpanded(true); setOpenSecs([]); }}>
-                <div style={S_.calcCollapsedRow}>
-                  <div>
-                    <div style={S_.calcCollapsedTitle}>Inputs locked in{live && live.label ? " · " + live.label : ""}</div>
-                    <div style={S_.calcCollapsedSub}>Tap to adjust her profile, your numbers, or the market.</div>
-                  </div>
-                  <span style={S_.chev}>+</span>
-                </div>
-              </div>
-              <div style={S_.calcCollapsed} onClick={() => setDisclaimOpen((v) => !v)}>
-                <div style={S_.calcCollapsedRow}>
-                  <div>
-                    <div style={S_.calcCollapsedTitle}>Data sources and outcomes</div>
-                    <div style={S_.calcCollapsedSub}>Where every number comes from, and how to read it.</div>
-                  </div>
-                  <span style={S_.chev}>{disclaimOpen ? "−" : "+"}</span>
-                </div>
-                {disclaimOpen && (
-                  <div style={{ ...S_.disclaim, marginTop: 10 }}>
-                    The upkeep floor, the comparison nudge, the fitness-scarcity pressure, and your
-                    income rank are anchored to real federal data for her ZIP: Census ACS county income
-                    and earnings (2023), CDC PLACES obesity (2024), and the national income
-                    distribution (2024–25). The money she interacts with regularly, her mobility, whether she's all in,
-                    and her history are things only you can read, and they carry the wider range shown
-                    on the right. Read this as a wake-up call, not a scoreboard. Modern hypergamy is real
-                    and well-documented, with social media, reality television, and dating apps driving
-                    expectations higher and placing more high-status men in front of her than any
-                    generation in history. Pretending otherwise is how men get blindsided. The
-                    only thing that moves your odds is becoming the man the number says you need to be.
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-          <>
+          <div style={r ? S_.resultRow : undefined} className={r ? "rpm-resultrow" : undefined}>
+            <div style={S_.col}>
           {SECTIONS.map((sec) => (
             <div key={sec.id} style={S_.accordion}>
               <button
@@ -2115,8 +2081,41 @@ function RetentionCalculatorInner() {
               )}
             </div>
           ))}
-          </>
-          )}
+            </div>
+            {r && (
+              <div style={S_.col}>
+                <div style={S_.empty}>
+                  <div style={S_.emptyHead}>
+                    <div style={S_.emptyTitle}>Our Datasets</div>
+                    <div style={S_.emptyMark}>S = B × C × M</div>
+                  </div>
+                  <div style={S_.emptyText}>
+                    Her market is built from real federal data, not estimates: Census ACS 5-year income,
+                    earnings, education, and age (2023), CDC PLACES adult obesity (2024), and the national
+                    income distribution (2024–25). Everything you see is drawn from a stored snapshot of more
+                    than 30,000 ZIP codes, so the model runs instantly and never calls a live server. We
+                    refresh that snapshot on a yearly cycle as new federal data publishes, so the numbers
+                    stay current without ever leaving your browser.
+                  </div>
+                </div>
+                {activeCard && (
+                  <div style={S_.exCard}>
+                    <button
+                      onClick={() => setExplainerOpen((v) => !v)}
+                      style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0, textAlign: "left" }}
+                      aria-expanded={explainerOpen}
+                    >
+                      <span style={S_.exCardLabel}>Why this answer · {activeCard.label}</span>
+                      <span style={S_.chev}>{explainerOpen ? "−" : "+"}</span>
+                    </button>
+                    {explainerOpen && (
+                      <div style={{ ...S_.exCardText, marginTop: 10 }}>{activeCard.text}</div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* OUTPUT COLUMN */}
