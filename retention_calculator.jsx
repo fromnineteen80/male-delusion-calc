@@ -2288,7 +2288,7 @@ function RetentionCalculatorInner() {
 
           <div style={S_.fwDuo} className="rpm-fwduo">
             <div style={S_.vCard}>
-              <div style={S_.cardTitle}>Your delivered value · V − F</div>
+              <div style={{ ...S_.cardTitle, marginBottom: 14 }}>Your delivered value · V − F</div>
               <VRow label="Provider value (Vp)" val={FMT(r.Vp)} pos />
               <VRow label="Relational value after discount" val={"+ " + FMT(r.loverOffset)} pos />
               <VRow label="Friction she absorbs (F)" val={"− " + FMT(r.F)} />
@@ -2354,7 +2354,7 @@ function RetentionCalculatorInner() {
                 <div style={{ ...S_.availBoxNum, marginTop: 14 }}>{Math.round(availability.final * mutual.attractShare).toLocaleString()}<span style={S_.availBoxNumLbl}>likely to date you</span></div>
               )}
               {mutual && (
-                <div style={{ ...S_.availBoxNum, marginTop: 14 }}>{Math.round(mutual.commitShare * 100)}%<span style={S_.availBoxNumLbl}>relationship potential</span></div>
+                <div style={{ ...S_.availBoxNum, marginTop: 14 }}>{mutual.realistic.toLocaleString()}<span style={S_.availBoxNumLbl}>relationship potential</span></div>
               )}
               <div style={S_.availBoxText}>
                 Estimated women within {availability.radius} miles who match the age, race,
@@ -2366,19 +2366,11 @@ function RetentionCalculatorInner() {
                   every 10,000 single women within {availability.radius} miles.</>
                 )}
               </div>
-              {mutual && (
-                <div style={S_.availBoxText}>
-                  Of those, about <strong>{Math.round(mutual.attractShare * 100)}%</strong> are likely drawn to a man
-                  at your standing in the local field ({Math.round(availability.final * mutual.attractShare).toLocaleString()} likely
-                  to date you), and of those roughly <strong>{Math.round(mutual.commitShare * 100)}%</strong> would
-                  commit given your delivered value against her price. The overlap is your realistic pool.
-                </div>
-              )}
             </div>
 
-            {/* MIDDLE — context, styled like the delivered-value (V−F) card */}
+            {/* RIGHT — pool in context, styled like the delivered-value (V−F) card */}
             <div style={S_.vCard}>
-              <div style={S_.cardTitle}>Your pool in context</div>
+              <div style={{ ...S_.cardTitle, marginBottom: 14 }}>Your pool in context</div>
               {availability.singleWomenAll > 0 && (
                 <VRow label="Of single women 18-64" val={fmtTinyPct(availability.final, availability.singleWomenAll)} />
               )}
@@ -2388,10 +2380,14 @@ function RetentionCalculatorInner() {
               {availability.singleWomenAll > 0 && availability.final > 0 && (
                 <VRow label="Single women per match" val={"1 in " + Math.max(1, Math.round(availability.singleWomenAll / availability.final)).toLocaleString()} />
               )}
-              <div style={S_.vTotal}>
-                <span>Potential matches</span>
-                <span>{availability.final.toLocaleString()}</span>
-              </div>
+              {mutual && (
+                <div style={S_.meansText}>
+                  Of the women you would match with, about <strong>{Math.round(mutual.attractShare * 100)}%</strong> are likely
+                  drawn to a man at your standing in the local field ({Math.round(availability.final * mutual.attractShare).toLocaleString()} likely
+                  to date you), and of those roughly <strong>{Math.round(mutual.commitShare * 100)}%</strong> would
+                  commit given your delivered value against her price. The overlap is your realistic pool.
+                </div>
+              )}
             </div>
           </div>
           <div style={S_.funnelWrap}>
