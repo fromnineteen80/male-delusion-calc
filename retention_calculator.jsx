@@ -1942,7 +1942,7 @@ function RetentionCalculatorInner() {
             <div key={sec.id} style={S_.accordion}>
               <button
                 onClick={() => toggleSec(sec.id)}
-                style={{ ...S_.accBtn, ...(isOpen(sec.id) ? S_.accBtnOpen : {}) }}
+                style={{ ...S_.accBtn, borderBottom: isOpen(sec.id) ? `1px solid ${LINE}` : "1px solid transparent", background: isOpen(sec.id) ? "var(--surface)" : "none" }}
               >
                 <span>
                   <span style={S_.accLabel}>{sec.label}</span>
