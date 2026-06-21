@@ -1939,7 +1939,7 @@ function RetentionCalculatorInner() {
           <div style={r ? S_.resultRow : undefined} className={r ? "rpm-resultrow" : undefined}>
             <div style={S_.col}>
           {SECTIONS.map((sec) => (
-            <div key={sec.id} style={{ ...S_.accordion, ...(r ? { borderLeft: `3px solid ${ACCENT}` } : {}) }}>
+            <div key={sec.id} style={{ ...S_.accordion, ...(r ? { borderLeft: `3px solid ${ACCENT}`, borderBottom: "none" } : {}) }}>
               <button
                 onClick={() => toggleSec(sec.id)}
                 style={{ ...S_.accBtn, ...(isOpen(sec.id) ? S_.accBtnOpen : {}) }}
